@@ -32,6 +32,12 @@ import GHC
 import GHC.Paths
 import Unsafe.Coerce
 
+import qualified Network.Gitit.Plugin.IncludeHeader as IncludeHeader
+
+builtinPlugins :: [Plugin]
+builtinPlugins = [ IncludeHeader.plugin
+                 ]
+
 loadPlugin :: FilePath -> IO Plugin
 loadPlugin pluginName = do
   logM "gitit" WARNING ("Loading plugin '" ++ pluginName ++ "'...")
@@ -82,11 +88,14 @@ loadPlugin pluginName = do
           "'. gitit was not compiled with plugin support."
   return undefined
 
+builtinPlugins :: [Plugin]
+builtinPlugins =  []
+
 #endif
 
 loadPlugins :: [FilePath] -> IO [Plugin]
 loadPlugins pluginNames = do
   plugins' <- mapM loadPlugin pluginNames
   unless (null pluginNames) $ logM "gitit" WARNING "Finished loading plugins."
-  return plugins'
+  return $ builtinPlugins ++ plugins'
 
